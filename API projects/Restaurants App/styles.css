@@ -1,0 +1,69 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 16px;
+}
+
+.card-restaurant {
+  width: 500px;
+  height: 600px;
+  border: 1px solid #dedede;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  margin: 20px 0;
+}
+
+img {
+  width: 100%;
+  height: 300px;
+}
+
+p {
+  font-size: 18px;
+}
+
+span {
+  margin: 0 5px;
+}
+
+.card-restaurant-details {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.country {
+  margin: 20px 0;
+}
+
+.phone {
+  margin: 20px 0;
+}
+
+.address {
+  margin: 20px 0;
+}
+
+a {
+  text-decoration: none;
+  background: red;
+  color: white;
+  padding: 10px;
+  width: 100px;
+  border-radius: 10px;
+  font-size: 17px;
+  margin: 20px 0;
+}

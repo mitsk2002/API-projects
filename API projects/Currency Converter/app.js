@@ -1,53 +1,76 @@
-let api = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
+let apiBase = `https://v6.exchangerate-api.com/v6/${apiKey}`;
 
+// DOM elements
 const fromDropDown = document.getElementById("from-currency-select");
-const toDropDown = document.getElementById("to-currency-select"); 
+const toDropDown = document.getElementById("to-currency-select");
+const result = document.querySelector("#result");
+const amountInput = document.querySelector("#amount");
 
-// Create dropdown from the currencies array
-currencies.forEach((currency) => {
-    const option = document.createElement("option");
-    option.value = currency;
-    option.text = currency;
-    fromDropDown.add(option)
-});
+// Populate dropdowns from API
+async function loadCurrencies() {
+    try {
+        const resp = await fetch(`${apiBase}/latest/USD`);
+        const data = await resp.json();
 
-// Repeat same thing for the other dropdown
-currencies.forEach((currency) => {
-    const option = document.createElement("option");
-    option.value = currency;
-    option.text = currency;
-    toDropDown.add(option)
-});
+        if (!data.conversion_rates) {
+            throw new Error("Invalid API response");
+        }
 
-// Setting default values
-fromDropDown.value = "USD";
-toDropDown.value = "INR";
+        const currencyCodes = Object.keys(data.conversion_rates);
 
-let convertCurrency = () => {
-    // Create references
-    const amount = document.querySelector("#amount").value;
+        currencyCodes.forEach(currency => {
+            const option1 = document.createElement("option");
+            option1.value = currency;
+            option1.text = currency;
+            fromDropDown.add(option1);
+
+            const option2 = document.createElement("option");
+            option2.value = currency;
+            option2.text = currency;
+            toDropDown.add(option2);
+        });
+
+        // Set defaults
+        fromDropDown.value = "USD";
+        toDropDown.value = "INR";
+
+    } catch (error) {
+        console.error("Error loading currencies:", error);
+        result.textContent = "Failed to load currency list.";
+    }
+}
+
+async function convertCurrency() {
+    const amount = amountInput.value;
     const fromCurrency = fromDropDown.value;
     const toCurrency = toDropDown.value;
 
-    // If amount input field is not empty
-    if (amount.length != 0){
-        fetch(api)
-            .then((resp) => resp.json())
-            .then((data) => {
-                let fromExchangeRate = data.conversion_rates[fromCurrency];
-                let toExchangeRate = data.conversion_rates[toCurrency];
-                const convertedAmount = (amount / fromExchangeRate) * toExchangeRate;
-                result.innerHTML = `${amount} ${fromCurrency} = 
-                ${convertedAmount.toFixed(
-                    2
-                )} ${toCurrency}`;
-            });
-    } else {
+    if (!amount) {
         alert("Please fill in the amount");
+        return;
     }
-};
 
-document
-    .querySelector("#convert-button")
-    .addEventListener("click", convertCurrency);
-window.addEventListener("load", convertCurrency);
+    try {
+        const resp = await fetch(`${apiBase}/latest/${fromCurrency}`);
+        const data = await resp.json();
+
+        if (!data.conversion_rates) {
+            throw new Error("Invalid API response");
+        }
+
+        const rate = data.conversion_rates[toCurrency];
+        const convertedAmount = (amount * rate).toFixed(2);
+
+        result.innerHTML = `${amount} ${fromCurrency} = ${convertedAmount} ${toCurrency}`;
+
+    } catch (error) {
+        console.error("Error converting currency:", error);
+        result.textContent = "Error fetching conversion rate.";
+    }
+}
+
+// Event listeners
+document.querySelector("#convert-button").addEventListener("click", convertCurrency);
+
+// Initialize
+window.addEventListener("load", loadCurrencies);

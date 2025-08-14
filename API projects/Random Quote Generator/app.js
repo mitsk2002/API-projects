@@ -1,18 +1,29 @@
-let quote = document.getElementById("quote");
-let author = document.getElementById("author");
-let btn = document.getElementById("btn");
+// app.js
+const quote = document.getElementById("quote");
+const author = document.getElementById("author");
+const btn = document.getElementById("btn");
 
-const url = "https://api.quotable.io";
+// Working API endpoint
+const url = "https://api.adviceslip.com/advice";
 
-let getQuote = () => {
-    fetch(url)
-        .then((data) => data.json())
-        .then((item) => {
-            quote.innerText = item.content;
-            author.innerText = item.author;
-        });
-};
+async function getQuote() {
+  try {
+    // Fetch advice from API
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
+    const data = await response.json();
+
+    // Update DOM
+    quote.innerText = data.slip.advice;
+    author.innerText = "Advice";
+  } catch (err) {
+    console.error("Error fetching quote:", err);
+    quote.innerText = "Sorry, something went wrong!";
+    author.innerText = "";
+  }
+}
+
+// Event listeners
 window.addEventListener("load", getQuote);
 btn.addEventListener("click", getQuote);
-

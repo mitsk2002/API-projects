@@ -1,6 +1,6 @@
 let meme = document.getElementById("meme");
 let title = document.getElementById("title");
-let getmemeBtn = document.getElementById("get-meme-btn");
+let getMemeBtn = document.getElementById("getMemeBtn");
 // API URL
 let url = "https://meme-api.com/gimme/";
 // Array of subreddits of your choice

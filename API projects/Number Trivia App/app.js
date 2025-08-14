@@ -1,73 +1,48 @@
-// Initial Refernces
-let result = document.getElementById("result");
-let searchBtn = document.getElementById("search-btn");
-let url = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+let getFactBtn = document.getElementById("get-fact-btn");
+let ranFactBtn = document.getElementById("ran-fact-btn");
+let fact = document.querySelector(".fact");
+let url = "http://numbersapi.com/";
 
-searchBtn.addEventListener("click", () => {
-    let userInp = document.getElementById("user-inp").value;
-    if (userInp.length ==0) {
-        result.innerHTML = `<h3>Input Field Cannot Be Empty</h3>`;
-    } else {
-        fetch(url + userInp)
-            .then(response => response.json())
-            .then((data) => {
-                let myMeal = data.meals[0];
-                console.log(myMeal);
-                console.log(myMeal.strMealThumb);
-                console.log(myMeal.strMeal);
-                console.log(myMeal.strArea);
-                console.log(myMeal.strInstructions);
-                let count = 1;
-                let ingredients = [];
-                for (let i in myMeal) {
-                    let ingredient = "";
-                    let measure = "";
-                    if(i.startsWith("strIngredient") && myMeal[i]) {
-                        ingredient = myMeal[i];
-                        measure = myMeal[`strMeasure`+count];
-                        count += 1;
-                        ingredients.push(`${measure} ${ingredient}
-                        `);
-            }
-        }
-        console.log(ingredients);
-
-        result.innerHTML = `
-        <img src=${myMeal.strMealThumb} />
-        <div class="details">
-            <h2>${myMeal.strMeal}</h2>
-            <h4>${myMeal.strArea}</h4>
-        </div>
-        <div id="ingredient-con"></div>
-        <div id="recipe">
-            <button id="hide-recipe">X</button>
-            <pre id="instructions">${myMeal.strInstructions}</pre>
-        </div>
-        <button id="show-recipe">View Recipe</button>
-        `;
-        let ingredientCon = document.getElementById("ingredient-con");
-        let parent = document.createElement("ul");
-        let recipe = document.getElementById("recipe");
-        let hideRecipe = document.getElementById("hide-recipe");
-        let showRecipe = document.getElementById("show-recipe");
-
-        ingredients.forEach((i) => {
-            let child = document.createElement("li");
-            child.innerText = i;
-            parent.appendChild(child);
-            ingredientCon.appendChild(parent);
-        });
-
-        hideRecipe.addEventListener("click", () => {
-            recipe.style.display = "none";
-        });
-        showRecipe.addEventListener("click", () => {
-            recipe.style.display = "block";
-        });
-    })
-    .catch(() => {
-        result.innerHTML = `<h3>Invalid Input</h3>`;
+let fetchFact = (num) => {
+    let finalUrl = url + num;
+    fetch(finalUrl)
+        .then(resp => resp.text())
+        .then(data => {
+         fact.style.display = "block";   
+         fact.innerHTML = `<h2>${num}</h2>
+        <p>${data}</p>`;
+        document.querySelector(".container").append(fact);
     });
+};
+let getFact = () => {
+    let num = document.getElementById("num").value;
+    // Check if input number is not empty
+    //If not empty
+    if (num) {
+        // Check if number lies between 0 and 300
+        // if Yes 
+        if(num >= 0 && num <=300) {
+            fetchFact(num);
+        } 
+        // If number is less than 0 or greater than 300, display error message.
+        else {
+            fact.style.display = "block";
+            fact.innerHTML = `<p class ="msg"> Please enter a number between 0 to 300.</p>`;
+        }
+    } 
+    // If input number is empty, display error message     
+    else {
+        fact.style.display = "block";
+        fact.innerHTML = `<p class="msg">The input field cannot be empty</p>`;
     }
-});
+};
 
+let getRandomFact = () => {
+    // Random number between 0 and 2300
+    let num = Math.floor(Math.random() * 301);
+    fetchFact(num);
+};
+
+// Adding event listeners
+getFactBtn.addEventListener("click", getFact);
+ranFactBtn.addEventListener("click", getRandomFact);
